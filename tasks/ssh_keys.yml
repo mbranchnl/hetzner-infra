@@ -1,0 +1,11 @@
+---
+- name: Manage SSH keys in Hetzner project
+  hetzner.hcloud.ssh_key:
+    name: "{{ item.name }}"
+    public_key: "{{ item.public_key | default(omit) }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_ssh_keys_upload }}"
+  loop_control:
+    label: "{{ item.name }}"

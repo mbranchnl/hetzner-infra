@@ -1,0 +1,34 @@
+---
+- name: "Gather current state for {{ inventory_hostname }}"
+  hetzner.hcloud.server_info:
+    name: "{{ inventory_hostname }}"
+    api_token: "{{ hetzner_api_token }}"
+  register: hetzner_server_info
+  changed_when: false
+
+- name: "Reconcile server {{ inventory_hostname }}"
+  hetzner.hcloud.server:
+    name: "{{ inventory_hostname }}"
+    server_type: "{{ hetzner_server_type }}"
+    location: "{{ hetzner_location }}"
+    image: "{{ hetzner_image }}"
+    ssh_keys: "{{ hetzner_ssh_keys | default(omit) }}"
+    labels: "{{ hetzner_labels | default(omit) }}"
+    private_networks: "{{ hetzner_networks if hetzner_networks | length > 0 else omit }}"
+    firewalls: "{{ hetzner_firewalls if hetzner_firewalls | length > 0 else omit }}"
+    enable_ipv4: "{{ hetzner_enable_ipv4 }}"
+    enable_ipv6: "{{ hetzner_enable_ipv6 }}"
+    backups: "{{ hetzner_backups }}"
+    delete_protection: "{{ hetzner_protection.delete }}"
+    rebuild_protection: "{{ hetzner_protection.rebuild }}"
+    state: "{{ hetzner_server_state }}"
+    api_token: "{{ hetzner_api_token }}"
+  register: hetzner_server_registered
+
+- name: "Expose server facts for {{ inventory_hostname }}"
+  ansible.builtin.set_fact:
+    hetzner_server_ipv4: "{{ hetzner_server_registered.hcloud_server.ipv4_address | default('') }}"
+    hetzner_server_ipv6: "{{ hetzner_server_registered.hcloud_server.ipv6_address | default('') }}"
+    hetzner_server_id: "{{ hetzner_server_registered.hcloud_server.id | default('') }}"
+    hetzner_server_status: "{{ hetzner_server_registered.hcloud_server.status | default('absent') }}"
+  when: hetzner_server_registered.hcloud_server is defined

@@ -1,0 +1,11 @@
+---
+- name: Manage firewalls
+  hetzner.hcloud.firewall:
+    name: "{{ item.name }}"
+    rules: "{{ item.rules | default([]) }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_firewalls_config }}"
+  loop_control:
+    label: "{{ item.name }}"

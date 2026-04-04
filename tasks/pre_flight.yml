@@ -1,0 +1,16 @@
+---
+- name: Assert hetzner_api_token is set
+  ansible.builtin.assert:
+    that:
+      - hetzner_api_token | length > 0
+    fail_msg: >-
+      hetzner_api_token is empty. Set the HCLOUD_TOKEN environment variable
+      or define hetzner_api_token in your vars/vault.
+    quiet: true
+
+- name: Assert hetzner_server_state is valid
+  ansible.builtin.assert:
+    that:
+      - hetzner_server_state in ['present', 'absent', 'stopped', 'started', 'restarted']
+    fail_msg: "hetzner_server_state must be one of: present, absent, stopped, started, restarted"
+    quiet: true

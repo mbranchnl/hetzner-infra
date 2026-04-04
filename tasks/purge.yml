@@ -1,0 +1,29 @@
+---
+- name: List all servers currently in Hetzner
+  hetzner.hcloud.server_info:
+    api_token: "{{ hetzner_api_token }}"
+  register: hetzner_all_servers
+
+- name: Determine servers not in inventory (candidates for deletion)
+  ansible.builtin.set_fact:
+    _hetzner_servers_to_purge: >-
+      {{
+        hetzner_all_servers.hcloud_server_info
+        | rejectattr('delete_protection', 'equalto', true)
+        | map(attribute='name')
+        | difference(ansible_play_hosts)
+        | list
+      }}
+
+- name: Report servers that will be purged
+  ansible.builtin.debug:
+    msg: "The following servers will be DELETED (not in inventory): {{ _hetzner_servers_to_purge }}"
+  when: _hetzner_servers_to_purge | length > 0
+
+- name: Delete unmanaged servers
+  hetzner.hcloud.server:
+    name: "{{ item }}"
+    state: absent
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ _hetzner_servers_to_purge }}"
+  when: _hetzner_servers_to_purge | length > 0

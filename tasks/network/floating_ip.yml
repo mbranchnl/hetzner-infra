@@ -1,0 +1,38 @@
+---
+- name: "Manage floating IPs for {{ inventory_hostname }}"
+  hetzner.hcloud.floating_ip:
+    name: "{{ item.name }}"
+    type: "{{ item.type | default('ipv4') }}"
+    home_location: "{{ item.home_location | default(hetzner_location) }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_floating_ips }}"
+  loop_control:
+    label: "{{ item.name }}"
+  register: hetzner_floating_ip_registered
+
+- name: "Assign floating IPs to {{ inventory_hostname }}"
+  hetzner.hcloud.floating_ip:
+    name: "{{ item.item.name }}"
+    server: "{{ inventory_hostname }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_floating_ip_registered.results }}"
+  loop_control:
+    label: "{{ item.item.name }}"
+  when:
+    - hetzner_server_state == 'present'
+    - item.item.state | default('present') == 'present'
+    - item.item.assign | default(true) | bool
+    - (item.hcloud_floating_ip.server.name | default('')) != inventory_hostname
+
+- name: "Expose floating IP facts for {{ inventory_hostname }}"
+  ansible.builtin.set_fact:
+    hetzner_floating_ip_addresses: >-
+      {{
+        hetzner_floating_ip_registered.results
+        | selectattr('hcloud_floating_ip', 'defined')
+        | map(attribute='hcloud_floating_ip')
+        | list
+      }}
+  when: hetzner_floating_ip_registered.results is defined

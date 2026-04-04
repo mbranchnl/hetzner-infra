@@ -1,0 +1,7 @@
+# Folders
+examples/*
+
+# Files
+.DS_Store
+*.log
+*.retry

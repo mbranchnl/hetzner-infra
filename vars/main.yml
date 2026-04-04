@@ -1,0 +1,11 @@
+---
+# Internal role variables - not intended to be overridden by users.
+# User-facing defaults live in defaults/main.yml.
+
+# Valid server states accepted by the hetzner.hcloud.server module
+_hetzner_valid_states:
+  - present
+  - absent
+  - stopped
+  - started
+  - restarted

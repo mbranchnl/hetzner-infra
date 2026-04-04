@@ -1,0 +1,60 @@
+---
+# Server lifecycle state: present | absent | stopped | started | restarted
+hetzner_server_state: present
+
+# --- Server specification (override per host in host_vars) ---
+hetzner_server_type: cx23
+hetzner_location: nbg1
+hetzner_image: ubuntu-24.04
+hetzner_ssh_keys: []        # names of SSH keys already present in Hetzner
+hetzner_labels: {}          # key/value labels applied to the server
+hetzner_networks: []        # private network names to attach the server to
+hetzner_firewalls: []       # firewall names to attach the server to
+hetzner_enable_ipv4: true
+hetzner_enable_ipv6: true
+hetzner_backups: false
+
+# Server protection flags
+hetzner_protection:
+  delete: false
+  rebuild: false
+
+# --- Per-host resources (define in host_vars) ---
+
+# Block storage volumes to create and attach to this server.
+# See tasks/volumes.yml for full schema.
+hetzner_volumes: []
+
+# Floating IPs to create and assign to this server.
+# See tasks/floating_ips.yml for full schema.
+hetzner_floating_ips: []
+
+# Default network zone for private network subnets.
+# Valid values: eu-central | us-east | us-west | ap-southeast
+hetzner_network_zone: eu-central
+
+# --- Project-level resources (define in group_vars or play vars) ---
+
+# SSH public keys to upload to the Hetzner project.
+# See tasks/ssh_keys.yml for full schema.
+hetzner_ssh_keys_upload: []
+
+# Private networks (and subnets) to create in the Hetzner project.
+# See tasks/networks.yml for full schema.
+hetzner_networks_config: []
+
+# Firewalls (and rules) to create in the Hetzner project.
+# See tasks/firewalls.yml for full schema.
+hetzner_firewalls_config: []
+
+# --- Role behaviour ---
+
+# Set to true to DESTROY Hetzner servers that are not present in the
+# inventory group. This mirrors 'terraform apply' with resources removed
+# from state. Use with caution.
+hetzner_manage_absent: false
+
+# API token - falls back to HCLOUD_TOKEN env var if not set explicitly.
+# The hetzner.hcloud collection reads HCLOUD_TOKEN automatically, so this
+# only needs to be set when you want to override it per-play.
+hetzner_api_token: "{{ lookup('env', 'HCLOUD_TOKEN') }}"

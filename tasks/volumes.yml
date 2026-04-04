@@ -1,0 +1,27 @@
+---
+- name: "Manage volumes for {{ inventory_hostname }}"
+  hetzner.hcloud.volume:
+    name: "{{ item.name }}"
+    size: "{{ item.size }}"
+    server: "{{ inventory_hostname }}"
+    format: "{{ item.format | default(omit) }}"
+    automount: "{{ item.automount | default(false) }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_volumes }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: hetzner_server_state == 'present'
+  register: hetzner_volume_registered
+
+- name: "Expose volume facts for {{ inventory_hostname }}"
+  ansible.builtin.set_fact:
+    hetzner_volume_devices: >-
+      {{
+        hetzner_volume_registered.results
+        | selectattr('hcloud_volume', 'defined')
+        | map(attribute='hcloud_volume')
+        | list
+      }}
+  when: hetzner_volume_registered.results is defined

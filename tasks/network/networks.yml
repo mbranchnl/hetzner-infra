@@ -1,0 +1,23 @@
+---
+- name: Manage private networks
+  hetzner.hcloud.network:
+    name: "{{ item.name }}"
+    ip_range: "{{ item.ip_range }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_networks_config }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Manage network subnets
+  hetzner.hcloud.subnetwork:
+    network: "{{ item.0.name }}"
+    ip_range: "{{ item.1.ip_range }}"
+    network_zone: "{{ item.1.network_zone | default(hetzner_network_zone) }}"
+    type: "{{ item.1.type | default('cloud') }}"
+    state: "{{ item.0.state | default('present') }}"
+    api_token: "{{ hetzner_api_token }}"
+  loop: "{{ hetzner_networks_config | subelements('subnets', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1.ip_range }}"
