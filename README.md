@@ -257,4 +257,4 @@ ansible-playbook -i inventory/hosts.yml playbook.yml -e hetzner_manage_absent=tr
 
 ## License
 
-MIT-0
+AGPL-3.0 license
