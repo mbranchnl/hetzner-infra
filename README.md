@@ -4,7 +4,7 @@ Declarative Hetzner Cloud infrastructure management for Ansible. Define your des
 
 ## How it works
 
-```
+```text
 inventory/host_vars/web01/main.yml   ← desired state (YAML)
           └─► hetzner_infra role     ← reconcile
                     └─► Hetzner API  ← actual state
@@ -30,7 +30,7 @@ ansible-playbook -i examples/inventory/hosts.yml examples/playbook.yml
 
 ## Inventory structure
 
-```
+```text
 inventory/
 ├── hosts.yml                         # groups and host list
 ├── group_vars/
@@ -50,7 +50,7 @@ The `inventory_hostname` is used as the **Hetzner server name**.
 
 Resources are processed in dependency order so that project-level resources always exist before servers reference them:
 
-```
+```text
 pre_flight → ssh_keys → networks → firewalls → server → volumes → floating_ip → [purge]
              └─────────────────────────────┘   └──────────────────────────────┘
                   project-level (run_once)             per-host
@@ -61,7 +61,7 @@ pre_flight → ssh_keys → networks → firewalls → server → volumes → fl
 ### Server — per-host, in `host_vars`
 
 | Variable | Default | Description |
-|---|---|---|
+| --- | --- | --- |
 | `hetzner_server_state` | `present` | `present` · `absent` · `stopped` · `started` · `restarted` |
 | `hetzner_server_type` | `cx23` | Hetzner server type (e.g. `cx22`, `cx32`, `ccx13`) |
 | `hetzner_location` | `nbg1` | Datacenter location: `nbg1` · `fsn1` · `hel1` · `ash` · `hil` · `sin` |
@@ -81,7 +81,7 @@ pre_flight → ssh_keys → networks → firewalls → server → volumes → fl
 Defined as a list under `hetzner_volumes`. Each entry creates and attaches a block storage volume.
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `name` | yes | Volume name in Hetzner |
 | `size` | yes | Size in GB |
 | `format` | no | Filesystem: `ext4` or `xfs` — only applied on first creation |
@@ -108,7 +108,7 @@ Facts set: `hetzner_volume_devices` — list of volume objects returned by the A
 Defined as a list under `hetzner_floating_ips`. Each entry creates a floating IP and, by default, assigns it to the host. Re-runs are idempotent — the IP is only (re)assigned when it is not already pointing at the correct server.
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `name` | yes | Floating IP name in Hetzner |
 | `type` | no | `ipv4` (default) or `ipv6` |
 | `home_location` | no | Defaults to `hetzner_location` |
@@ -132,7 +132,7 @@ Facts set: `hetzner_floating_ip_addresses` — list of floating IP objects retur
 Uploads public keys to the Hetzner project before servers are created. Runs once per play.
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `name` | yes | Key name in Hetzner |
 | `public_key` | yes | Public key string (use `lookup('file', ...)` for local files) |
 | `labels` | no | Key/value labels |
@@ -151,7 +151,7 @@ hetzner_ssh_keys_upload:
 Creates private networks and their subnets before servers are attached. Runs once per play.
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `name` | yes | Network name in Hetzner |
 | `ip_range` | yes | Network CIDR (e.g. `10.0.0.0/8`) |
 | `labels` | no | Key/value labels |
@@ -161,7 +161,7 @@ Creates private networks and their subnets before servers are attached. Runs onc
 **Subnet keys:**
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `ip_range` | yes | Subnet CIDR — must be within the network range |
 | `network_zone` | no | Defaults to `hetzner_network_zone` — `eu-central` · `us-east` · `us-west` · `ap-southeast` |
 | `type` | no | `cloud` (default) · `server` · `vswitch` |
@@ -182,7 +182,7 @@ hetzner_networks_config:
 Creates firewalls and their rules before servers reference them. Runs once per play.
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `name` | yes | Firewall name in Hetzner |
 | `rules` | no | List of rule definitions (see below) |
 | `labels` | no | Key/value labels |
@@ -191,7 +191,7 @@ Creates firewalls and their rules before servers reference them. Runs once per p
 **Rule keys:**
 
 | Key | Required | Description |
-|---|---|---|
+| --- | --- | --- |
 | `direction` | yes | `in` or `out` |
 | `protocol` | yes | `tcp` · `udp` · `icmp` · `esp` · `gre` |
 | `port` | no | Port or range (e.g. `"22"`, `"8000-9000"`) — required for `tcp`/`udp` |
@@ -222,7 +222,7 @@ hetzner_firewalls_config:
 ### Role behaviour
 
 | Variable | Default | Description |
-|---|---|---|
+| --- | --- | --- |
 | `hetzner_network_zone` | `eu-central` | Default network zone used for subnets that do not specify one |
 | `hetzner_manage_absent` | `false` | When `true`, delete any Hetzner server not present in the inventory group |
 | `hetzner_api_token` | `$HCLOUD_TOKEN` | API token — falls back to the `HCLOUD_TOKEN` environment variable |
@@ -232,7 +232,7 @@ hetzner_firewalls_config:
 The following facts are available on each host after the role runs and can be used in subsequent tasks or roles.
 
 | Fact | Description |
-|---|---|
+| --- | --- |
 | `hetzner_server_ipv4` | Public IPv4 address |
 | `hetzner_server_ipv6` | Public IPv6 address |
 | `hetzner_server_id` | Hetzner server ID |
