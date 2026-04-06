@@ -1,6 +1,7 @@
 ---
 - name: Validate required variables
   ansible.builtin.include_tasks: pre_flight.yml
+
 - name: Manage SSH keys
   ansible.builtin.include_tasks: ssh_keys.yml
   when: hetzner_ssh_keys_upload | length > 0
@@ -15,6 +16,7 @@
   ansible.builtin.include_tasks: network/firewalls.yml
   when: hetzner_firewalls_config | length > 0
   run_once: true
+
 - name: Manage server lifecycle
   ansible.builtin.include_tasks: server.yml
 
@@ -25,6 +27,7 @@
 - name: Manage floating IPs
   ansible.builtin.include_tasks: network/floating_ip.yml
   when: hetzner_floating_ips | length > 0
+
 - name: Purge unmanaged servers
   ansible.builtin.include_tasks: purge.yml
   when: hetzner_manage_absent | bool
