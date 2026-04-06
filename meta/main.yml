@@ -3,5 +3,3 @@ galaxy_info:
   description: Declarative Hetzner Cloud infrastructure management - define VMs in hostvars, role reconciles against Hetzner API
   license: AGPL-3.0 license
   min_ansible_version: "2.14"
-  platforms:
-    - name: all
