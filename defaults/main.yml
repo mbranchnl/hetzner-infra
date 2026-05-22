@@ -54,7 +54,4 @@ hetzner_firewalls_config: []
 # from state. Use with caution.
 hetzner_manage_absent: false
 
-# API token - falls back to HCLOUD_TOKEN env var if not set explicitly.
-# The hetzner.hcloud collection reads HCLOUD_TOKEN automatically, so this
-# only needs to be set when you want to override it per-play.
-hetzner_api_token: "{{ lookup('env', 'HCLOUD_TOKEN') }}"
+# API token - must be defined in Ansible Vault as vault_hetzner_api_token.
