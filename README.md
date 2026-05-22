@@ -23,9 +23,16 @@ inventory/host_vars/web01/main.yml   ← desired state (YAML)
 
 ## Quick start
 
+define `vault_hetzner_api_token` or export the token:
+
 ```bash
 export HCLOUD_TOKEN=your_token_here
-ansible-playbook -i examples/inventory/hosts.yml examples/playbook.yml
+```
+
+Execute playbook:
+
+```bash
+ansible-playbook -i inventory/hosts.yml playbooks/playbook.yml
 ```
 
 ## Inventory structure
