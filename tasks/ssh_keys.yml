@@ -5,7 +5,7 @@
     public_key: "{{ item.public_key | default(omit) }}"
     labels: "{{ item.labels | default(omit) }}"
     state: "{{ item.state | default('present') }}"
-    api_token: "{{ hetzner_api_token }}"
+    api_token: "{{ vault_hetzner_api_token }}"
   loop: "{{ hetzner_ssh_keys_upload }}"
   loop_control:
     label: "{{ item.name }}"

@@ -6,7 +6,7 @@
     home_location: "{{ item.home_location | default(hetzner_location) }}"
     labels: "{{ item.labels | default(omit) }}"
     state: "{{ item.state | default('present') }}"
-    api_token: "{{ hetzner_api_token }}"
+    api_token: "{{ vault_hetzner_api_token }}"
   loop: "{{ hetzner_floating_ips }}"
   loop_control:
     label: "{{ item.name }}"
@@ -16,7 +16,7 @@
   hetzner.hcloud.floating_ip:
     name: "{{ item.item.name }}"
     server: "{{ inventory_hostname }}"
-    api_token: "{{ hetzner_api_token }}"
+    api_token: "{{ vault_hetzner_api_token }}"
   loop: "{{ hetzner_floating_ip_registered.results }}"
   loop_control:
     label: "{{ item.item.name }}"

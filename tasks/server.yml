@@ -2,7 +2,7 @@
 - name: "Gather current state for {{ inventory_hostname }}"
   hetzner.hcloud.server_info:
     name: "{{ inventory_hostname }}"
-    api_token: "{{ hetzner_api_token }}"
+    api_token: "{{ vault_hetzner_api_token }}"
   register: hetzner_server_info
   changed_when: false
 
@@ -22,7 +22,7 @@
     delete_protection: "{{ hetzner_protection.delete }}"
     rebuild_protection: "{{ hetzner_protection.rebuild }}"
     state: "{{ hetzner_server_state }}"
-    api_token: "{{ hetzner_api_token }}"
+    api_token: "{{ vault_hetzner_api_token }}"
   register: hetzner_server_registered
 
 - name: "Expose server facts for {{ inventory_hostname }}"

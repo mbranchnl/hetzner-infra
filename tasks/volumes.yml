@@ -8,7 +8,7 @@
     automount: "{{ item.automount | default(false) }}"
     labels: "{{ item.labels | default(omit) }}"
     state: "{{ item.state | default('present') }}"
-    api_token: "{{ hetzner_api_token }}"
+    api_token: "{{ vault_hetzner_api_token }}"
   loop: "{{ hetzner_volumes }}"
   loop_control:
     label: "{{ item.name }}"
