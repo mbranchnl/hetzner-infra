@@ -34,6 +34,7 @@
   when:
     - hetzner_private_ip is defined
     - hetzner_networks | default([]) | length > 0
+    - hetzner_server_registered.hcloud_server is not none
 
 - name: "Expose active server facts for {{ inventory_hostname }}"
   ansible.builtin.set_fact:
