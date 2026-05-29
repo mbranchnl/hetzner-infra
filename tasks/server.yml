@@ -39,6 +39,7 @@
 - name: "Expose active server facts for {{ inventory_hostname }}"
   ansible.builtin.set_fact:
     hetzner_server_ipv4: "{{ hetzner_server_registered.hcloud_server.ipv4_address | default('') }}"
+    hetzner_server_private_ipv4: "{{ hetzner_private_ip | default('') }}"
     hetzner_server_ipv6: "{{ hetzner_server_registered.hcloud_server.ipv6_address | default('') }}"
     hetzner_server_id: "{{ hetzner_server_registered.hcloud_server.id | default('') }}"
     hetzner_server_status: "{{ hetzner_server_registered.hcloud_server.status | default('absent') }}"

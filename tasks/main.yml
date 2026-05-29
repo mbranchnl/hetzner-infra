@@ -32,3 +32,6 @@
   ansible.builtin.include_tasks: purge.yml
   when: hetzner_manage_absent | bool
   run_once: true
+
+- name: Show infra overview
+  ansible.builtin.include_tasks: overview.yml
