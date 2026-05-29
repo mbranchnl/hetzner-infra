@@ -14,7 +14,6 @@
     image: "{{ hetzner_image }}"
     ssh_keys: "{{ hetzner_ssh_keys | default(omit) }}"
     labels: "{{ hetzner_labels | default(omit) }}"
-    private_networks: "{{ hetzner_networks if hetzner_networks | length > 0 else omit }}"
     firewalls: "{{ hetzner_firewalls if hetzner_firewalls | length > 0 else omit }}"
     enable_ipv4: "{{ hetzner_enable_ipv4 }}"
     enable_ipv6: "{{ hetzner_enable_ipv6 }}"
@@ -32,12 +31,14 @@
     ip: "{{ hetzner_private_ip }}"
     api_token: "{{ vault_hetzner_api_token }}"
     state: present
-  when: hetzner_private_ip is defined
+  when:
+    - hetzner_private_ip is defined
+    - hetzner_networks | default([]) | length > 0
 
-- name: "Expose server facts for {{ inventory_hostname }}"
+- name: "Expose active server facts for {{ inventory_hostname }}"
   ansible.builtin.set_fact:
     hetzner_server_ipv4: "{{ hetzner_server_registered.hcloud_server.ipv4_address | default('') }}"
     hetzner_server_ipv6: "{{ hetzner_server_registered.hcloud_server.ipv6_address | default('') }}"
     hetzner_server_id: "{{ hetzner_server_registered.hcloud_server.id | default('') }}"
     hetzner_server_status: "{{ hetzner_server_registered.hcloud_server.status | default('absent') }}"
-  when: hetzner_server_registered.hcloud_server is defined
+  when: hetzner_server_registered.hcloud_server is not none
