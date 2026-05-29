@@ -82,8 +82,8 @@ pre_flight → ssh_keys → networks → firewalls → server → volumes → fl
 | `hetzner_backups` | `false` | Enable Hetzner automated backups |
 | `hetzner_protection.delete` | `false` | Protect the server against accidental deletion |
 | `hetzner_protection.rebuild` | `false` | Protect the server against rebuilds |
-| `hetzner_private_ip` | — | Static private IP to assign within the network (optional; requires `hetzner_private_ip_network`) |
-| `hetzner_private_ip_network` | — | Network name to attach the server to with the static private IP (required when `hetzner_private_ip` is set) |
+| `hetzner_server_ipv4_private` | — | Static private IP to assign within the network (optional; requires `hetzner_server_ipv4_private_network`) |
+| `hetzner_server_ipv4_private_network` | — | Network name to attach the server to with the static private IP (required when `hetzner_server_ipv4_private` is set) |
 
 ### Volumes — per-host, in `host_vars`
 

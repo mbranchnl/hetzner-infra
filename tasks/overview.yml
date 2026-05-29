@@ -1,0 +1,10 @@
+---
+- name: Show final server inventory
+  ansible.builtin.debug:
+    msg:
+      - 'Server         : {{ inventory_hostname }}'
+      - "  IPv4         : {{ hetzner_server_ipv4 | default('n/a') }}"
+      - "  Private IPv4 : {{ hetzner_server_ipv4_private | default('n/a') }}"
+      - "  IPv6         : {{ hetzner_server_ipv6 | default('n/a') }}"
+      - "  State        : {{ hetzner_server_status | default('unknown') }}"
+  when: hetzner_server_ipv4 is defined or hetzner_server_status is defined
