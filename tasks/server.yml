@@ -25,6 +25,15 @@
     api_token: "{{ vault_hetzner_api_token }}"
   register: hetzner_server_registered
 
+- name: "Add static private-ip to {{ inventory_hostname }}"
+  hetzner.hcloud.server_network:
+    network: "{{ hetzner_private_ip_network }}"
+    server: "{{ inventory_hostname }}"
+    ip: "{{ hetzner_private_ip }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+    state: present
+  when: hetzner_private_ip is defined
+
 - name: "Expose server facts for {{ inventory_hostname }}"
   ansible.builtin.set_fact:
     hetzner_server_ipv4: "{{ hetzner_server_registered.hcloud_server.ipv4_address | default('') }}"
