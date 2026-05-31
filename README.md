@@ -271,10 +271,38 @@ Creates load balancers and attaches their networks, services, and targets. Runs 
 
 | Key | Required | Description |
 | --- | --- | --- |
-| `type` | yes | `server` · `label_selector` · `ip` |
+| `type` | yes | `server` · `label_selector` · `ip` — determines which field below is used |
 | `server` | no | Server name — required when `type: server` |
 | `label_selector` | no | Label selector string — required when `type: label_selector` |
 | `ip` | no | IP address — required when `type: ip` |
+
+The three target types behave differently:
+
+- **`server`** — adds a single named server as a target. The server must exist in the same Hetzner project. Use this when you manage a fixed, known set of backends.
+
+  ```yaml
+  targets:
+    - type: server
+      server: web01
+    - type: server
+      server: web02
+  ```
+
+- **`label_selector`** — adds all servers matching a label selector as targets. The LB tracks membership dynamically — servers added or removed from the group are picked up automatically. Use this for auto-scaling groups or any set of servers managed by label.
+
+  ```yaml
+  targets:
+    - type: label_selector
+      label_selector: role=web
+  ```
+
+- **`ip`** — adds an arbitrary IP address as a target. Use this to route traffic to servers outside the Hetzner project (e.g. bare metal, other clouds) or to a floating IP.
+
+  ```yaml
+  targets:
+    - type: ip
+      ip: 203.0.113.10
+  ```
 
 ```yaml
 hetzner_loadbalancers_config:
