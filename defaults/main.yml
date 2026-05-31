@@ -47,6 +47,10 @@ hetzner_networks_config: []
 # See tasks/firewalls.yml for full schema.
 hetzner_firewalls_config: []
 
+# Load balancers to create in the Hetzner project.
+# See tasks/network/loadbalancers.yml for full schema.
+hetzner_loadbalancers_config: []
+
 # --- Role behaviour ---
 
 # Set to true to DESTROY Hetzner servers that are not present in the

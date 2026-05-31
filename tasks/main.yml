@@ -17,6 +17,11 @@
   when: hetzner_firewalls_config | length > 0
   run_once: true
 
+- name: Manage loadbalancers
+  ansible.builtin.include_tasks: network/loadbalancers.yml
+  when: hetzner_loadbalancers_config | length > 0
+  run_once: true
+
 - name: Manage server lifecycle
   ansible.builtin.include_tasks: server.yml
 

@@ -58,9 +58,9 @@ The `inventory_hostname` is used as the **Hetzner server name**.
 Resources are processed in dependency order so that project-level resources always exist before servers reference them:
 
 ```text
-pre_flight → ssh_keys → networks → firewalls → server → volumes → floating_ip → [purge]
-             └─────────────────────────────┘   └──────────────────────────────┘
-                  project-level (run_once)             per-host
+pre_flight → ssh_keys → networks → firewalls → loadbalancers → server → volumes → floating_ip → [purge]
+             └───────────────────────────────────────────────┘   └──────────────────────────────┘
+                          project-level (run_once)                        per-host
 ```
 
 ## Variable reference
@@ -226,6 +226,72 @@ hetzner_firewalls_config:
         port: "443"
         source_ips: ["0.0.0.0/0", "::/0"]
         description: HTTPS
+```
+
+### Load balancers — project-level, in `group_vars`
+
+Creates load balancers and attaches their networks, services, and targets. Runs once per play.
+
+| Key | Required | Description |
+| --- | --- | --- |
+| `name` | yes | Load balancer name in Hetzner |
+| `load_balancer_type` | yes | LB type (e.g. `lb11`, `lb21`, `lb31`) |
+| `location` | no | Datacenter location — mutually exclusive with `network_zone` |
+| `network_zone` | no | Network zone — mutually exclusive with `location` |
+| `algorithm` | no | `round_robin` (default) or `least_connections` |
+| `labels` | no | Key/value labels |
+| `state` | no | `present` (default) or `absent` |
+| `networks` | no | List of private network names to attach the LB to |
+| `services` | no | List of service definitions (see below) |
+| `targets` | no | List of target definitions (see below) |
+
+**Service keys:**
+
+| Key | Required | Description |
+| --- | --- | --- |
+| `protocol` | yes | `http` · `https` · `tcp` |
+| `listen_port` | yes | Port the LB listens on |
+| `destination_port` | no | Port forwarded to targets (defaults to `listen_port`) |
+| `health_check` | no | Health check definition passed through to the API |
+
+**Target keys:**
+
+| Key | Required | Description |
+| --- | --- | --- |
+| `type` | yes | `server` · `label_selector` · `ip` |
+| `server` | no | Server name — required when `type: server` |
+| `label_selector` | no | Label selector string — required when `type: label_selector` |
+| `ip` | no | IP address — required when `type: ip` |
+
+```yaml
+hetzner_loadbalancers_config:
+  - name: web-lb
+    load_balancer_type: lb11
+    location: nbg1
+    algorithm: round_robin
+    labels:
+      env: production
+    networks:
+      - prod-network
+    services:
+      - protocol: http
+        listen_port: 80
+        destination_port: 8080
+      - protocol: https
+        listen_port: 443
+        destination_port: 8443
+        health_check:
+          protocol: http
+          port: 8080
+          interval: 15
+          timeout: 10
+          retries: 3
+          http:
+            path: /health
+            status_codes: ["2??"]
+    targets:
+      - type: label_selector
+        label_selector: role=web
 ```
 
 ### Role behaviour

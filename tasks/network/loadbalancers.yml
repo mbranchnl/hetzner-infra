@@ -1,0 +1,50 @@
+---
+- name: Manage load balancers
+  hetzner.hcloud.load_balancer:
+    name: "{{ item.name }}"
+    load_balancer_type: "{{ item.load_balancer_type }}"
+    location: "{{ item.location | default(omit) }}"
+    network_zone: "{{ item.network_zone | default(omit) }}"
+    algorithm: "{{ item.algorithm | default(omit) }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+  loop: "{{ hetzner_loadbalancers_config }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Manage load balancer network attachments
+  hetzner.hcloud.load_balancer_network:
+    load_balancer: "{{ item.0.name }}"
+    network: "{{ item.1 }}"
+    state: "{{ item.0.state | default('present') }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+  loop: "{{ hetzner_loadbalancers_config | subelements('networks', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1 }}"
+
+- name: Manage load balancer services
+  hetzner.hcloud.load_balancer_service:
+    load_balancer: "{{ item.0.name }}"
+    protocol: "{{ item.1.protocol }}"
+    listen_port: "{{ item.1.listen_port }}"
+    destination_port: "{{ item.1.destination_port | default(omit) }}"
+    health_check: "{{ item.1.health_check | default(omit) }}"
+    state: "{{ item.0.state | default('present') }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+  loop: "{{ hetzner_loadbalancers_config | subelements('services', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1.protocol }}:{{ item.1.listen_port }}"
+
+- name: Manage load balancer targets
+  hetzner.hcloud.load_balancer_target:
+    load_balancer: "{{ item.0.name }}"
+    type: "{{ item.1.type }}"
+    server: "{{ item.1.server | default(omit) }}"
+    label_selector: "{{ item.1.label_selector | default(omit) }}"
+    ip: "{{ item.1.ip | default(omit) }}"
+    state: "{{ item.0.state | default('present') }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+  loop: "{{ hetzner_loadbalancers_config | subelements('targets', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.0.name }}/{{ item.1.type }}"
