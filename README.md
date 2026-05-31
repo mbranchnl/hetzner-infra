@@ -252,7 +252,20 @@ Creates load balancers and attaches their networks, services, and targets. Runs 
 | `protocol` | yes | `http` · `https` · `tcp` |
 | `listen_port` | yes | Port the LB listens on |
 | `destination_port` | no | Port forwarded to targets (defaults to `listen_port`) |
-| `health_check` | no | Health check definition passed through to the API |
+| `health_check` | no | Health check definition (see below) |
+
+**Health check keys** (nested under a service's `health_check`):
+
+| Key | Required | Description |
+| --- | --- | --- |
+| `protocol` | yes | `http` or `tcp` |
+| `port` | yes | Port to probe on each target |
+| `interval` | no | Seconds between probes (default: `15`) |
+| `timeout` | no | Seconds before a probe times out (default: `10`) |
+| `retries` | no | Failed probes before marking unhealthy (default: `3`) |
+| `http.path` | no | HTTP path to request (default: `/`) |
+| `http.status_codes` | no | Accepted status code patterns (e.g. `["2??"]`) |
+| `http.response` | no | String the response body must contain (e.g. `"OK"`) |
 
 **Target keys:**
 
@@ -289,6 +302,7 @@ hetzner_loadbalancers_config:
           http:
             path: /health
             status_codes: ["2??"]
+            response: "OK"
     targets:
       - type: label_selector
         label_selector: role=web
