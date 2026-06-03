@@ -35,6 +35,7 @@
   loop: "{{ hetzner_loadbalancers_config | subelements('services', skip_missing=True) }}"
   loop_control:
     label: "{{ item.0.name }}/{{ item.1.protocol }}:{{ item.1.listen_port }}"
+  changed_when: false
 
 - name: Manage load balancer targets
   hetzner.hcloud.load_balancer_target:
