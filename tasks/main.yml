@@ -17,13 +17,16 @@
   when: hetzner_firewalls_config | length > 0
   run_once: true
 
+- name: Manage server lifecycle
+  ansible.builtin.include_tasks: server.yml
+
+# Load balancer targets reference servers by name, so the servers must
+# already exist in the Hetzner project. This block therefore runs after
+# the server lifecycle, not before.
 - name: Manage loadbalancers
   ansible.builtin.include_tasks: network/loadbalancers.yml
   when: hetzner_loadbalancers_config | length > 0
   run_once: true
-
-- name: Manage server lifecycle
-  ansible.builtin.include_tasks: server.yml
 
 - name: Manage volumes
   ansible.builtin.include_tasks: volumes.yml
