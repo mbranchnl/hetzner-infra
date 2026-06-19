@@ -1,4 +1,6 @@
 # Folders
+.ansible
+.claude
 examples/*
 
 # Files
