@@ -1,0 +1,25 @@
+---
+- name: "Manage storage boxes for {{ inventory_hostname }}"
+  hetzner.hcloud.storage_box:
+    name: "{{ item.name }}"
+    product: "{{ item.product }}"
+    location: "{{ item.location | default(hetzner_location) }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+  loop: "{{ hetzner_storage_boxes }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: hetzner_server_state == 'present'
+  register: hetzner_storage_box_registered
+
+- name: "Expose storage box facts for {{ inventory_hostname }}"
+  ansible.builtin.set_fact:
+    hetzner_storage_box_devices: >-
+      {{
+        hetzner_storage_box_registered.results
+        | selectattr('hcloud_storage_box', 'defined')
+        | map(attribute='hcloud_storage_box')
+        | list
+      }}
+  when: hetzner_storage_box_registered.results is defined

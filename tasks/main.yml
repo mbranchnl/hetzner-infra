@@ -32,6 +32,10 @@
   ansible.builtin.include_tasks: storage/volumes.yml
   when: hetzner_volumes | length > 0
 
+- name: Manage storage boxes
+  ansible.builtin.include_tasks: storage/storage_boxes.yml
+  when: hetzner_storage_boxes | length > 0
+
 - name: Manage floating IPs
   ansible.builtin.include_tasks: network/floating_ip.yml
   when: hetzner_floating_ips | length > 0

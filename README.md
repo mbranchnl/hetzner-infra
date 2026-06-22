@@ -58,9 +58,9 @@ The `inventory_hostname` is used as the **Hetzner server name**.
 Resources are processed in dependency order so that project-level resources always exist before servers reference them:
 
 ```text
-pre_flight → ssh_keys → networks → firewalls → loadbalancers → server → volumes → floating_ip → [purge]
-             └───────────────────────────────────────────────┘   └──────────────────────────────┘
-                          project-level (run_once)                        per-host
+pre_flight → ssh_keys → networks → firewalls → loadbalancers → server → volumes → storage_boxes → floating_ip → [purge]
+             └───────────────────────────────────────────────┘   └──────────────────────────────────────────────┘
+                          project-level (run_once)                                 per-host
 ```
 
 ## Variable reference
@@ -111,6 +111,31 @@ hetzner_volumes:
 ```
 
 Facts set: `hetzner_volume_devices` — list of volume objects returned by the API.
+
+### Storage boxes — per-host, in `host_vars`
+
+Defined as a list under `hetzner_storage_boxes`. Each entry provisions a Hetzner Storage Box.
+
+| Key | Required | Description |
+| --- | --- | --- |
+| `name` | yes | Storage box name in Hetzner |
+| `product` | yes | Storage box plan (e.g. `BX11`, `BX21`, `BX41`) |
+| `location` | no | Datacenter location — defaults to `hetzner_location` |
+| `labels` | no | Key/value labels |
+| `state` | no | `present` (default) or `absent` |
+
+```yaml
+hetzner_storage_boxes:
+  - name: db01-backups
+    product: BX21
+    labels:
+      purpose: backup
+  - name: db01-archive
+    product: BX41
+    location: fsn1
+```
+
+Facts set: `hetzner_storage_box_devices` — list of storage box objects returned by the API.
 
 ### Floating IPs — per-host, in `host_vars`
 
@@ -355,6 +380,7 @@ The following facts are available on each host after the role runs and can be us
 | `hetzner_server_id` | Hetzner server ID |
 | `hetzner_server_status` | Current server status |
 | `hetzner_volume_devices` | List of volume objects for this host |
+| `hetzner_storage_box_devices` | List of storage box objects for this host |
 | `hetzner_floating_ip_addresses` | List of floating IP objects for this host |
 
 ## Removing servers

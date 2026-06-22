@@ -22,8 +22,14 @@ hetzner_protection:
 # --- Per-host resources (define in host_vars) ---
 
 # Block storage volumes to create and attach to this server.
-# See tasks/volumes.yml for full schema.
+# See tasks/storage/volumes.yml for full schema.
 hetzner_volumes: []
+
+# Storage boxes to provision for this server.
+# Required per item: name, product (e.g. BX11).
+# Optional per item: location (defaults to hetzner_location), labels, state.
+# See tasks/storage/storage_boxes.yml for full schema.
+hetzner_storage_boxes: []
 
 # Floating IPs to create and assign to this server.
 # See tasks/floating_ips.yml for full schema.
