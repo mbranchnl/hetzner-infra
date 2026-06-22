@@ -58,9 +58,18 @@ The `inventory_hostname` is used as the **Hetzner server name**.
 Resources are processed in dependency order so that project-level resources always exist before servers reference them:
 
 ```text
-pre_flight → ssh_keys → networks → firewalls → loadbalancers → server → volumes → storage_boxes → floating_ip → [purge]
-             └───────────────────────────────────────────────┘   └──────────────────────────────────────────────┘
-                          project-level (run_once)                                 per-host
+pre_flight
+├── project/          (run_once)
+│   ├── ssh_keys
+│   ├── network/networks
+│   └── network/firewalls
+├── server
+├── network/loadbalancers   (run_once)
+├── storage/
+│   ├── volumes
+│   └── storage_boxes
+├── network/floating_ip
+└── purge             (run_once, optional)
 ```
 
 ## Variable reference
@@ -161,7 +170,7 @@ hetzner_floating_ips:
 
 Facts set: `hetzner_floating_ip_addresses` — list of floating IP objects returned by the API.
 
-### SSH keys — project-level, in `group_vars`
+### SSH keys — project-level, in `group_vars` (`tasks/project/ssh_keys.yml`)
 
 Uploads public keys to the Hetzner project before servers are created. Runs once per play.
 
@@ -180,7 +189,7 @@ hetzner_ssh_keys_upload:
     public_key: "ssh-ed25519 AAAA..."
 ```
 
-### Networks — project-level, in `group_vars`
+### Networks — project-level, in `group_vars` (`tasks/network/networks.yml`)
 
 Creates private networks and their subnets before servers are attached. Runs once per play.
 
@@ -211,7 +220,7 @@ hetzner_networks_config:
         type: cloud
 ```
 
-### Firewalls — project-level, in `group_vars`
+### Firewalls — project-level, in `group_vars` (`tasks/network/firewalls.yml`)
 
 Creates firewalls and their rules before servers reference them. Runs once per play.
 
@@ -253,7 +262,7 @@ hetzner_firewalls_config:
         description: HTTPS
 ```
 
-### Load balancers — project-level, in `group_vars`
+### Load balancers — project-level, in `group_vars` (`tasks/network/loadbalancers.yml`)
 
 Creates load balancers and attaches their networks, services, and targets. Runs once per play.
 

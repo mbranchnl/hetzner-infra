@@ -32,7 +32,7 @@ hetzner_volumes: []
 hetzner_storage_boxes: []
 
 # Floating IPs to create and assign to this server.
-# See tasks/floating_ips.yml for full schema.
+# See tasks/network/floating_ip.yml for full schema.
 hetzner_floating_ips: []
 
 # Default network zone for private network subnets.
@@ -42,15 +42,15 @@ hetzner_network_zone: eu-central
 # --- Project-level resources (define in group_vars or play vars) ---
 
 # SSH public keys to upload to the Hetzner project.
-# See tasks/ssh_keys.yml for full schema.
+# See tasks/project/ssh_keys.yml for full schema.
 hetzner_ssh_keys_upload: []
 
 # Private networks (and subnets) to create in the Hetzner project.
-# See tasks/networks.yml for full schema.
+# See tasks/network/networks.yml for full schema.
 hetzner_networks_config: []
 
 # Firewalls (and rules) to create in the Hetzner project.
-# See tasks/firewalls.yml for full schema.
+# See tasks/network/firewalls.yml for full schema.
 hetzner_firewalls_config: []
 
 # Load balancers to create in the Hetzner project.
