@@ -3,7 +3,7 @@
   ansible.builtin.include_tasks: pre_flight.yml
 
 - name: Manage SSH keys
-  ansible.builtin.include_tasks: ssh_keys.yml
+  ansible.builtin.include_tasks: project/ssh_keys.yml
   when: hetzner_ssh_keys_upload | length > 0
   run_once: true
 
