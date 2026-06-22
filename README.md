@@ -94,7 +94,7 @@ pre_flight
 | `hetzner_protection.rebuild` | `false` | Protect the server against rebuilds |
 | `hetzner_server_ipv4_private` | — | Static private IP to assign within the network (optional; requires `hetzner_server_ipv4_private_network`) |
 | `hetzner_server_ipv4_private_network` | — | Network name to attach the server to with the static private IP (required when `hetzner_server_ipv4_private` is set) |
-| `hetzner_placement_group` | `""` | Placement group name to assign this server to — see [Placement groups](#placement-groups) |
+| `hetzner_placement_group` | `""` | Placement group name to assign this server to — see Placement groups |
 
 ### Labels
 

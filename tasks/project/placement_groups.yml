@@ -1,0 +1,11 @@
+---
+- name: "Reconcile placement group {{ item.name }}"
+  hetzner.hcloud.placement_group:
+    name: "{{ item.name }}"
+    type: "{{ item.type | default('spread') }}"
+    labels: "{{ item.labels | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    api_token: "{{ vault_hetzner_api_token }}"
+  loop: "{{ hetzner_placement_groups_config }}"
+  loop_control:
+    label: "{{ item.name }}"
