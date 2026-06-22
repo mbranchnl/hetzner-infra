@@ -62,7 +62,8 @@ pre_flight
 ├── project/          (run_once)
 │   ├── ssh_keys
 │   ├── network/networks
-│   └── network/firewalls
+│   ├── network/firewalls
+│   └── placement_groups
 ├── server
 ├── network/loadbalancers   (run_once)
 ├── storage/
@@ -93,6 +94,7 @@ pre_flight
 | `hetzner_protection.rebuild` | `false` | Protect the server against rebuilds |
 | `hetzner_server_ipv4_private` | — | Static private IP to assign within the network (optional; requires `hetzner_server_ipv4_private_network`) |
 | `hetzner_server_ipv4_private_network` | — | Network name to attach the server to with the static private IP (required when `hetzner_server_ipv4_private` is set) |
+| `hetzner_placement_group` | `""` | Placement group name to assign this server to — see [Placement groups](#placement-groups) |
 
 ### Labels
 
@@ -131,6 +133,34 @@ hetzner_loadbalancers_config:
 ```
 
 Adding a new host with `role: web` in its `hetzner_labels` is enough for it to appear behind the load balancer on the next run.
+
+### Placement groups — project-level, in `group_vars` (`tasks/project/placement_groups.yml`)
+
+Creates placement groups before servers are assigned to them. Runs once per play. A `spread` placement group guarantees that every server in the group runs on a different physical host, giving you rack-awareness without any manual scheduling.
+
+| Key | Required | Description |
+| --- | --- | --- |
+| `name` | yes | Placement group name in Hetzner |
+| `type` | no | `spread` (default and currently the only option) |
+| `labels` | no | Key/value labels |
+| `state` | no | `present` (default) or `absent` |
+
+```yaml
+hetzner_placement_groups_config:
+  - name: web-spread
+    type: spread
+    labels:
+      env: production
+```
+
+Assign a server to the group in its `host_vars`:
+
+```yaml
+# host_vars/web01/main.yml
+hetzner_placement_group: web-spread
+```
+
+All servers that share the same placement group name are guaranteed to land on different physical hosts. Add each new server to the same group and Hetzner enforces the constraint automatically.
 
 ### Volumes — per-host, in `host_vars`
 

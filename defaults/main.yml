@@ -19,6 +19,10 @@ hetzner_protection:
   delete: false
   rebuild: false
 
+# Placement group name to assign this server to for rack-awareness (spread).
+# The placement group must be defined in hetzner_placement_groups_config.
+hetzner_placement_group: ""
+
 # --- Per-host resources (define in host_vars) ---
 
 # Block storage volumes to create and attach to this server.
@@ -44,6 +48,10 @@ hetzner_network_zone: eu-central
 # SSH public keys to upload to the Hetzner project.
 # See tasks/project/ssh_keys.yml for full schema.
 hetzner_ssh_keys_upload: []
+
+# Placement groups to create in the Hetzner project.
+# See tasks/project/placement_groups.yml for full schema.
+hetzner_placement_groups_config: []
 
 # Private networks (and subnets) to create in the Hetzner project.
 # See tasks/network/networks.yml for full schema.

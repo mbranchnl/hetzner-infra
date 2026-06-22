@@ -20,6 +20,7 @@
     backups: "{{ hetzner_backups }}"
     delete_protection: "{{ hetzner_protection.delete }}"
     rebuild_protection: "{{ hetzner_protection.rebuild }}"
+    placement_group: "{{ hetzner_placement_group if hetzner_placement_group | length > 0 else omit }}"
     state: "{{ hetzner_server_state }}"
     api_token: "{{ vault_hetzner_api_token }}"
   register: hetzner_server_registered
