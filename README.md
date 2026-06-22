@@ -83,7 +83,7 @@ pre_flight
 | `hetzner_location` | `nbg1` | Datacenter location: `nbg1` · `fsn1` · `hel1` · `ash` · `hil` · `sin` |
 | `hetzner_image` | `ubuntu-24.04` | OS image name |
 | `hetzner_ssh_keys` | `[]` | SSH key names to inject — must exist in Hetzner (see `hetzner_ssh_keys_upload`) |
-| `hetzner_labels` | `{}` | Key/value labels applied to the server |
+| `hetzner_labels` | `{}` | Key/value labels applied to the server — see [Labels](#labels) |
 | `hetzner_networks` | `[]` | Private network names to attach the server to |
 | `hetzner_firewalls` | `[]` | Firewall names to attach to the server |
 | `hetzner_enable_ipv4` | `true` | Assign a public IPv4 address |
@@ -93,6 +93,44 @@ pre_flight
 | `hetzner_protection.rebuild` | `false` | Protect the server against rebuilds |
 | `hetzner_server_ipv4_private` | — | Static private IP to assign within the network (optional; requires `hetzner_server_ipv4_private_network`) |
 | `hetzner_server_ipv4_private_network` | — | Network name to attach the server to with the static private IP (required when `hetzner_server_ipv4_private` is set) |
+
+### Labels
+
+`hetzner_labels` is a flat mapping of string key/value pairs attached to the Hetzner server resource. Labels are reconciled on every run — adding, changing, or removing a key updates the server in-place without recreating it.
+
+```yaml
+hetzner_labels:
+  env: production
+  role: web
+  team: platform
+```
+
+**Constraints** (enforced by the Hetzner API):
+
+- Keys and values must be strings.
+- Keys may contain letters, digits, `-`, `_`, and `.`, with an optional `prefix/` namespace (e.g. `example.com/env`).
+- Maximum 256 labels per resource.
+
+**Use with load balancer `label_selector` targets**
+
+The primary reason to label servers is so load balancers can target them dynamically. When a server carries a matching label, the load balancer picks it up automatically — no manual target list to maintain:
+
+```yaml
+# host_vars/web01/main.yml
+hetzner_labels:
+  role: web
+
+# group_vars/hetzner_servers.yml
+hetzner_loadbalancers_config:
+  - name: web-lb
+    load_balancer_type: lb11
+    location: nbg1
+    targets:
+      - type: label_selector
+        label_selector: role=web   # matches any server with this label
+```
+
+Adding a new host with `role: web` in its `hetzner_labels` is enough for it to appear behind the load balancer on the next run.
 
 ### Volumes — per-host, in `host_vars`
 
