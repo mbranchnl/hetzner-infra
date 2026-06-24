@@ -1,5 +1,5 @@
 ---
-- name: "Reconcile placement group {{ item.name }}"
+- name: "Reconcile placement group {{ item.name | default('') }}"
   hetzner.hcloud.placement_group:
     name: "{{ item.name }}"
     type: "{{ item.type | default('spread') }}"

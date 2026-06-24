@@ -189,6 +189,22 @@ hetzner_volumes:
 
 Facts set: `hetzner_volume_devices` — list of volume objects returned by the API.
 
+**Resizing volumes**
+
+Increasing `size` expands the block device in place — the volume is never removed or recreated. Shrinking is not supported by the Hetzner API; the module will warn and leave the volume unchanged.
+
+Hetzner only accepts size values in multiples of 10 GB (e.g. 10, 20, 100, 110). Values that are not a multiple of 10 will be rejected by the API.
+
+After Ansible resizes the block device, the filesystem itself is not automatically expanded. Run `resize2fs` (ext4) or `xfs_growfs` (xfs) on the server to make the extra space available:
+
+```bash
+# ext4
+resize2fs /dev/disk/by-id/scsi-0HC_Volume_<id>
+
+# xfs (must be mounted)
+xfs_growfs /mnt/volume
+```
+
 ### Storage boxes — per-host, in `host_vars`
 
 Defined as a list under `hetzner_storage_boxes`. Each entry provisions a Hetzner Storage Box.
@@ -474,6 +490,25 @@ hetzner_server_state: absent
 ```bash
 ansible-playbook -i inventory/hosts.yml playbook.yml -e hetzner_manage_absent=true
 ```
+
+### Deleting a protected server
+
+When `hetzner_protection.delete` or `hetzner_protection.rebuild` is `true`, the Hetzner API blocks deletion and the purge task skips the server entirely. You must lift the protection first, then delete in a second run.
+
+**Step 1** — disable both protections in `host_vars` and run the playbook to reconcile the protection flags:
+
+```yaml
+# host_vars/web02/main.yml
+hetzner_protection:
+  delete: false
+  rebuild: false
+```
+
+```bash
+ansible-playbook -i inventory/hosts.yml playbook.yml
+```
+
+**Step 2** — then delete as normal (Option A or Option B above).
 
 ## License
 
